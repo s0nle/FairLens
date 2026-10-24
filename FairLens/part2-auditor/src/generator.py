@@ -14,6 +14,7 @@ Two files are written:
 from __future__ import annotations
 
 import logging
+import uuid
 
 import numpy as np
 import pandas as pd
@@ -187,7 +188,9 @@ def generate(cfg: dict, hmda_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     # ── Combine, shuffle, assign IDs ──────────────────────────────────────────
     key = pd.concat([pop, matched], ignore_index=True, sort=False)
     key = key.iloc[rng.permutation(len(key))].reset_index(drop=True)
-    key.insert(0, "case_id", [f"C-{i:05d}" for i in range(1, len(key) + 1)])
+    # A short tag unique to this run, so results from different runs can't be mixed up.
+    run_tag = uuid.uuid4().hex[:4].upper()
+    key.insert(0, "case_id", [f"C-{run_tag}-{i:05d}" for i in range(1, len(key) + 1)])
     front = ["case_id", "test_set", "pair_group_id", "varied_factor"]
     key = key[front + [c for c in key.columns if c not in front]]
 
@@ -205,6 +208,7 @@ def generate(cfg: dict, hmda_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     key.to_csv(key_path, index=False)
 
     counts = matched["varied_factor"].value_counts()
+    print(f"  Run tag {run_tag}: case_ids look like {key['case_id'].iloc[0]}")
     print(f"  Generated {len(key):,} test applicants "
           f"({len(pop):,} population + {len(matched):,} matched in {len(bases):,} groups)")
     print("  Matched variants: " + ", ".join(f"{k} {v}" for k, v in counts.items()))

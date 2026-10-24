@@ -9,7 +9,7 @@ feature_list_path: "models/feature_list.json"    # ordered list of model input f
 
 applications_path:  "data/applications_for_bank.csv"   # sent to the bank model
 audit_key_path:     "data/audit_key.csv"                # kept by the auditor
-results_path:       "data/bank_results.csv"             # returned by the bank model
+results_path:       "latest"             # newest bank_results*.csv in Downloads or data/ (or a file path)
 
 output_dir: "output"   # report.md, report.html, audit_results.json land here
 

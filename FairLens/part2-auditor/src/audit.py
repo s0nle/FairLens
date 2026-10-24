@@ -15,7 +15,7 @@ output/audit_results.json.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -77,6 +77,40 @@ def _flip_severity(rate: float, cfg: dict) -> str:
     if rate >= s["low"]:
         return "low"
     return "none"
+
+
+def _shift_test(deltas: pd.Series) -> tuple[float | None, float | None]:
+    """Average change in approval probability for the same applicant, and the p-value
+    of a paired t-test (is the average shift different from zero beyond chance?)."""
+    d = pd.to_numeric(deltas, errors="coerce").dropna()
+    if len(d) < 10:
+        return None, None
+    mean = float(d.mean())
+    if float(d.std(ddof=1)) == 0.0:
+        return mean, (0.0 if mean != 0 else 1.0)
+    from scipy import stats
+    return mean, float(stats.ttest_1samp(d, 0.0).pvalue)
+
+
+def _shift_severity(mean: float | None, p_value: float | None, cfg: dict) -> str:
+    """How big a probability penalty (or boost) the bank gives for this one change.
+    Only counts when it's statistically clear (p below the configured level)."""
+    if mean is None or p_value is None or p_value >= cfg["fairness"]["shift_p_value"]:
+        return "none"
+    s, size = cfg["fairness"]["prob_shift_severity"], abs(mean)
+    if size >= s["high"]:
+        return "high"
+    if size >= s["medium"]:
+        return "medium"
+    if size >= s["low"]:
+        return "low"
+    return "none"
+
+
+def _fmt_p(p: float | None) -> str:
+    if p is None:
+        return "n/a"
+    return "< 0.001" if p < 0.001 else f"= {p:.3f}"
 
 
 def _max_sev(*levels: str) -> str:
@@ -144,10 +178,13 @@ def swap_test(df: pd.DataFrame, cfg: dict, max_examples: int = 10) -> dict:
     # model input, so a flip there means the model answered identical applications
     # differently: an inconsistency, not evidence about the demographic itself.
     features = [f for f in cfg["model_features"] if f in var.columns and f in base.columns]
-    base_inputs = base[features].astype(str)
+    def as_text(frame: pd.DataFrame) -> pd.DataFrame:      # blanks compare equal to blanks
+        return frame.astype(object).where(frame.notna(), "<blank>").astype(str)
+
+    base_inputs = as_text(base[features])
     var["inputs_identical"] = [
         (base_inputs.loc[g].to_numpy() == row).all()
-        for g, row in zip(var["pair_group_id"], var[features].astype(str).to_numpy())
+        for g, row in zip(var["pair_group_id"], as_text(var[features]).to_numpy())
     ]
     var["bias_flip"] = var["flipped"] & ~var["inputs_identical"]
     var["inconsistent_flip"] = var["flipped"] & var["inputs_identical"]
@@ -157,6 +194,11 @@ def swap_test(df: pd.DataFrame, cfg: dict, max_examples: int = 10) -> dict:
         n, flips = len(g), int(g["flipped"].sum())
         rate = flips / n if n else 0.0
         bias_rate = float(g["bias_flip"].mean()) if n else 0.0
+        # Only pairs where the bank saw a difference can show a real penalty.
+        changed = g[~g["inputs_identical"]]
+        shift, p_value = _shift_test(changed["delta_prob"]) if len(changed) else (None, None)
+        flip_sev = _flip_severity(bias_rate, cfg)
+        shift_sev = _shift_severity(shift, p_value, cfg)
         summary.append({
             "varied_factor": factor,
             "label": FACTOR_LABELS.get(factor, factor),
@@ -169,7 +211,11 @@ def swap_test(df: pd.DataFrame, cfg: dict, max_examples: int = 10) -> dict:
             "avg_delta_prob": float(g["delta_prob"].mean()) if g["delta_prob"].notna().any() else None,
             "bank_inputs_changed": bool((~g["inputs_identical"]).any()),
             "n_inconsistent": int(g["inconsistent_flip"].sum()),
-            "severity": _flip_severity(bias_rate, cfg),
+            "avg_shift_when_inputs_changed": shift,
+            "shift_p_value": p_value,
+            "flip_severity": flip_sev,
+            "shift_severity": shift_sev,
+            "severity": _max_sev(flip_sev, shift_sev),
         })
     summary.sort(key=lambda r: -r["flip_rate"])
 
@@ -314,6 +360,10 @@ def summarize(gf: dict, swaps: dict, proxies: dict, cfg: dict) -> tuple[dict, st
         swap_rows = [by_factor[k] for k in swap_keys if k in by_factor]
         swap_sev = _max_sev(*[r["severity"] for r in swap_rows]) if swap_rows else "none"
         for r in swap_rows:
+            if r.get("shift_severity", "none") != "none":
+                reasons.append(f"the same applicant's approval chance moved "
+                               f"{r['avg_shift_when_inputs_changed'] * 100:+.0f} points on average "
+                               f"when only this changed (p {_fmt_p(r['shift_p_value'])})")
             bias_flips = r["n_flipped"] - r["n_inconsistent"]
             if bias_flips:
                 reasons.append(f"{bias_flips / r['n_pairs']:.0%} of matched pairs flipped "
@@ -337,8 +387,9 @@ def summarize(gf: dict, swaps: dict, proxies: dict, cfg: dict) -> tuple[dict, st
                        "different decisions)")
     if strong:
         verdict = "unfair"
-        reason = ("Decisions change when only a protected factor or its stand-in changes, "
-                  "which is direct evidence of bias: " + ", ".join(flagged) + ".")
+        reason = ("The bank treats otherwise identical applicants differently when only a "
+                  "protected factor or its stand-in changes, which is direct evidence of bias: "
+                  + ", ".join(flagged) + ".")
     elif flagged:
         verdict = "needs_review"
         reason = ("Disparities found that need human review: " + ", ".join(flagged)
@@ -361,7 +412,8 @@ def run_full_audit(df: pd.DataFrame, cfg: dict, hmda_df: pd.DataFrame | None = N
 
     test_set = df.get("test_set", pd.Series("", index=df.index))
     results = {
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "results_file": cfg.get("_results_file_used"),
         "n_total": int(len(df)),
         "n_population": int((test_set == "population").sum()),
         "n_matched": int((test_set == "matched").sum()),
@@ -381,6 +433,8 @@ def run_full_audit(df: pd.DataFrame, cfg: dict, hmda_df: pd.DataFrame | None = N
             "disparate_impact": cfg["fairness"]["disparate_impact_threshold"],
             "proxy_auc": cfg["fairness"]["proxy_auc_flag_threshold"],
             "flip_rate": cfg["fairness"]["flip_rate_severity"],
+            "probability_shift": cfg["fairness"]["prob_shift_severity"],
+            "shift_p_value": cfg["fairness"]["shift_p_value"],
             "low_minority_pct": cfg["low_minority_threshold"],
             "high_minority_pct": cfg["high_minority_threshold"],
         },

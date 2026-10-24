@@ -14,7 +14,8 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src.utils import AuditorError, read_table, resolve_path, to_numeric
+from src.utils import (DEFAULT_RESULTS_FILE, AuditorError, read_table, resolve_path,
+                       to_numeric, wants_latest)
 
 logger = logging.getLogger("auditor.bank_connector")
 
@@ -57,7 +58,8 @@ def score(cfg: dict) -> pd.DataFrame:
         results = fake_score(apps, "biased", int(cfg["random_seed"]),
                              float(cfg["high_minority_threshold"]))
 
-    out = resolve_path(cfg["results_path"])
+    out = resolve_path(DEFAULT_RESULTS_FILE if wants_latest(cfg["results_path"])
+                       else cfg["results_path"])
     out.parent.mkdir(parents=True, exist_ok=True)
     results.to_csv(out, index=False)
     print(f"  {len(results):,} decisions, approval rate {results['decision'].mean():.1%} -> {out}")

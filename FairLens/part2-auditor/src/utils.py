@@ -88,6 +88,9 @@ def load_config(config_path: str | Path | None = None) -> dict:
     fair.setdefault("proxy_auc_flag_threshold", 0.65)
     fair.setdefault("severity", {"high": 0.60, "medium": 0.75, "low": 0.80})
     fair.setdefault("flip_rate_severity", {"high": 0.10, "medium": 0.05, "low": 0.02})
+    # Average change in approval probability for the same applicant (swap tests).
+    fair.setdefault("prob_shift_severity", {"high": 0.10, "medium": 0.05, "low": 0.02})
+    fair.setdefault("shift_p_value", 0.01)
     cfg.setdefault("llm", {})
 
     # Model features: keep plain column names only, and never allow protected
@@ -116,6 +119,36 @@ def protected_column_list(cfg: dict) -> list[str]:
         if c not in cols:
             cols.append(c)
     return cols
+
+
+LATEST = {"latest", "auto", "newest"}
+RESULTS_PATTERN = "bank_results*.csv"
+DEFAULT_RESULTS_FILE = "data/bank_results.csv"
+
+
+def wants_latest(path_value) -> bool:
+    return str(path_value).strip().lower() in LATEST
+
+
+def results_search_folders(cfg: dict) -> list[Path]:
+    """Where to look for the newest bank_results*.csv (Colab downloads land in Downloads)."""
+    folders = [PROJECT_ROOT / "data", Path.home() / "Downloads",
+               Path.home() / "OneDrive" / "Downloads", PROJECT_ROOT]
+    folders += [Path(p).expanduser() for p in (cfg.get("results_search_folders") or [])]
+    seen, out = set(), []
+    for f in folders:
+        key = str(f.resolve()) if f.exists() else None
+        if key and key not in seen:
+            seen.add(key)
+            out.append(f)
+    return out
+
+
+def find_results_files(cfg: dict) -> list[Path]:
+    """All bank_results*.csv files in the search folders, newest first."""
+    files = {p.resolve() for folder in results_search_folders(cfg)
+             for p in folder.glob(RESULTS_PATTERN) if p.is_file()}
+    return sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
 
 
 def resolve_path(path_value: str | Path, must_exist: bool = False) -> Path:

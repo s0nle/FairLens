@@ -7,10 +7,13 @@ only when the audit can't run at all (no case_id/decision column, no matches).
 from __future__ import annotations
 
 import logging
+from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
-from src.utils import AuditorError, read_table, resolve_path
+from src.utils import (AuditorError, find_results_files, read_table, resolve_path,
+                       results_search_folders, wants_latest)
 
 logger = logging.getLogger("auditor.ingest")
 
@@ -57,19 +60,55 @@ def validate(results_df: pd.DataFrame, audit_key_df: pd.DataFrame) -> list[str]:
     return warnings
 
 
+def pick_latest_results(cfg: dict, audit_key_df: pd.DataFrame, min_match: float = 0.9) -> Path:
+    """Newest bank_results*.csv (Downloads or data/) that belongs to the current applicants.
+
+    Files from an older `generate` run have different case_ids, so they're skipped even
+    if they're newer, which stops an old download from being audited by mistake.
+    """
+    candidates = find_results_files(cfg)
+    if not candidates:
+        places = ", ".join(str(f) for f in results_search_folders(cfg))
+        raise AuditorError(f"No bank_results*.csv found. Looked in: {places}\n"
+                           "  Download it from the bank model (Part 1) first.")
+    key_ids = set(audit_key_df["case_id"].astype(str))
+    skipped = 0
+    for path in candidates[:25]:
+        try:
+            ids = set(pd.read_csv(path, usecols=["case_id"], dtype=str)["case_id"])
+        except Exception:
+            skipped += 1
+            continue
+        if key_ids and len(ids & key_ids) / len(key_ids) >= min_match:
+            if skipped:
+                print(f"  Skipped {skipped} newer file(s) that don't match the current applicants.")
+            return path
+        skipped += 1
+    raise AuditorError(
+        f"Found {len(candidates)} bank_results file(s), but none match the current "
+        "applicants (audit_key.csv).\n  Did you run `python main.py generate` again after "
+        "scoring? Score the new applications_for_bank.csv in Part 1, then audit.")
+
+
 def ingest(cfg: dict, results_df: pd.DataFrame | None = None,
            audit_key_df: pd.DataFrame | None = None) -> pd.DataFrame:
     """Return audit key rows joined with the bank's decision and probability."""
-    if results_df is None:
-        path = resolve_path(cfg["results_path"], must_exist=True)
-        if not path.exists():
-            raise AuditorError(f"Results file not found: {path}")
-        results_df = read_table(path, dtype={"case_id": str})
     if audit_key_df is None:
         path = resolve_path(cfg["audit_key_path"], must_exist=True)
         if not path.exists():
             raise AuditorError(f"Audit key not found: {path}. Run:  python main.py generate")
         audit_key_df = read_table(path, dtype={"case_id": str})
+    if results_df is None:
+        if wants_latest(cfg["results_path"]):
+            path = pick_latest_results(cfg, audit_key_df)
+        else:
+            path = resolve_path(cfg["results_path"], must_exist=True)
+            if not path.exists():
+                raise AuditorError(f"Results file not found: {path}")
+        when = datetime.fromtimestamp(path.stat().st_mtime).strftime("%b %d, %Y %I:%M %p")
+        print(f"  Using bank results: {path}  (saved {when})")
+        cfg["_results_file_used"] = str(path)
+        results_df = read_table(path, dtype={"case_id": str})
 
     warnings = validate(results_df, audit_key_df)
     for w in warnings:

@@ -13,8 +13,11 @@ import json
 import logging
 import os
 import re
+import shutil
+from datetime import datetime
+from pathlib import Path
 
-from src.utils import AuditorError, resolve_path, to_jsonable
+from src.utils import AuditorError, resolve_path, to_jsonable, write_json
 
 logger = logging.getLogger("auditor.report")
 
@@ -42,12 +45,20 @@ def _tables(r: dict) -> list[str]:
     L += ["", "Ratio = worst group's approval rate / best group's. Below 0.80 is flagged "
           "(the four-fifths rule).", "",
           "### Swap tests (matched applicants, one change at a time)", "",
-          "| Change | Pairs | Flipped | Flip rate | Avg probability change | Severity |",
+          "| Change | Pairs | Flipped | Flip rate | Approval chance change (same applicant) | Severity |",
           "| --- | --- | --- | --- | --- | --- |"]
     for s in r["swap_tests"]["summary"]:
-        d = s["avg_delta_prob"]
+        d = s.get("avg_shift_when_inputs_changed")
+        if d is None:
+            change = "0 pts (bank saw no difference)" if not s.get("bank_inputs_changed") else "n/a"
+        else:
+            p = s.get("shift_p_value")
+            sig = "" if p is None else (", p < 0.001" if p < 0.001 else f", p = {p:.3f}")
+            change = f"{d * 100:+.1f} pts{sig}"
         L.append(f"| {s['label']} | {s['n_pairs']} | {s['n_flipped']} | {_pct(s['flip_rate'])} | "
-                 f"{'n/a' if d is None else f'{d:+.3f}'} | {s['severity']} |")
+                 f"{change} | {s['severity']} |")
+    L += ["", "Severity uses whichever is stronger: how many decisions flipped, or how much the "
+          "same applicant's approval chance moved (counted only when statistically clear)."]
     cons = r.get("consistency") or {}
     if cons.get("n_identical_pairs"):
         L += ["", f"Consistency: the bank model saw {cons['n_identical_pairs']} pairs of identical "
@@ -123,6 +134,7 @@ def _template_report(r: dict) -> str:
          f"- Cases audited: {r['n_total']} ({r['n_population']} population applicants and "
          f"{r['n_matched']} matched applicants in {r['n_pair_groups']} groups)",
          f"- Overall approval rate: {_pct(r['overall_approval_rate'])}",
+         f"- Bank results file: {Path(r['results_file']).name if r.get('results_file') else 'n/a'}",
          "- Model inputs checked: " + ", ".join(r["model_features"]),
          "- Tests: group fairness, swap tests (one change at a time), proxy detection", "",
          "## Bias summary by factor", "",
@@ -295,8 +307,22 @@ def generate_report(results: dict, cfg: dict) -> dict:
 
     out_dir = resolve_path(cfg["output_dir"])
     out_dir.mkdir(parents=True, exist_ok=True)
+    page = markdown_to_html(md)
+
+    # Latest report stays at output/report.* ; every run also gets its own dated folder.
     (out_dir / "report.md").write_text(md, encoding="utf-8")
-    (out_dir / "report.html").write_text(markdown_to_html(md), encoding="utf-8")
-    print(f"  Report written ({'IBM Granite' if mode == 'ai' else 'template mode'}): "
-          f"{out_dir / 'report.md'} and report.html")
-    return {"mode": mode, "markdown": md}
+    (out_dir / "report.html").write_text(page, encoding="utf-8")
+
+    run_dir = out_dir / "runs" / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "report.md").write_text(md, encoding="utf-8")
+    (run_dir / "report.html").write_text(page, encoding="utf-8")
+    write_json(results, run_dir / "audit_results.json")
+    used = results.get("results_file")
+    if used and Path(used).exists():
+        shutil.copy2(used, run_dir / "bank_results_used.csv")
+
+    print(f"  Report written ({'IBM Granite' if mode == 'ai' else 'template mode'})")
+    print(f"    latest:   {out_dir / 'report.html'}")
+    print(f"    this run: {run_dir / 'report.html'}")
+    return {"mode": mode, "markdown": md, "run_dir": str(run_dir)}
