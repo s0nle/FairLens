@@ -54,3 +54,10 @@ htmlcov/
 # ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+
+__pycache__/
+*.joblib
+.env
+FairLens/part2-
+auditor/output/
+FairLens/part2-auditor/data/

@@ -1,0 +1,56 @@
+﻿# ── Secrets & credentials ─────────────────────────────────────────────────────
+.env
+*.env
+.env.*
+
+# ── Large / generated data files ──────────────────────────────────────────────
+data/hmda_la_2018_lar.csv
+data/applications_for_bank.csv
+data/audit_key.csv
+data/bank_results.csv
+
+# ── Trained model artefacts ───────────────────────────────────────────────────
+models/*.joblib
+models/*.pkl
+models/*.h5
+models/feature_list.json
+
+# ── Generated output ──────────────────────────────────────────────────────────
+output/report.md
+output/report.html
+output/audit_results.json
+
+# ── Test run CSVs (regenerated; can be large) ─────────────────────────────────
+test_results/biased_results.csv
+test_results/fair_results.csv
+test_results/age_biased_results.csv
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── pytest / coverage ─────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

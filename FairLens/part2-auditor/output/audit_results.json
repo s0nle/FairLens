@@ -1,0 +1,1059 @@
+{
+  "generated_at": "2026-10-24T06:46:48+00:00",
+  "n_total": 2119,
+  "n_population": 600,
+  "n_matched": 1519,
+  "n_pair_groups": 250,
+  "overall_approval_rate": 0.926852288815479,
+  "model_features": [
+    "loan_type",
+    "loan_amount",
+    "property_value",
+    "income",
+    "debt_to_income_ratio",
+    "loan_to_value_ratio",
+    "loan_term",
+    "intro_rate_period",
+    "lien_status",
+    "construction_method",
+    "manufactured_home_secured_property_type",
+    "manufactured_home_land_property_interest",
+    "total_units",
+    "multifamily_affordable_units",
+    "submission_of_application",
+    "initially_payable_to_institution",
+    "aus_1",
+    "census_tract",
+    "tract_minority_population_percent",
+    "tract_to_msa_income_percentage",
+    "ffiec_msa_md_median_family_income",
+    "tract_population",
+    "tract_one_to_four_family_homes",
+    "tract_median_age_of_housing_units",
+    "county_code",
+    "state_code",
+    "msa_md",
+    "co_applicant_credit_score_type",
+    "applicant_credit_score_type"
+  ],
+  "group_fairness": {
+    "rates": {
+      "tract_minority_level": [
+        {
+          "group": "low",
+          "n": 312,
+          "approval_rate": 0.9294871794871795,
+          "included": true
+        },
+        {
+          "group": "medium",
+          "n": 229,
+          "approval_rate": 0.9213973799126638,
+          "included": true
+        },
+        {
+          "group": "high",
+          "n": 59,
+          "approval_rate": 0.9152542372881356,
+          "included": true
+        }
+      ],
+      "derived_race": [
+        {
+          "group": "American Indian or Alaska Native",
+          "n": 5,
+          "approval_rate": 1.0,
+          "included": false
+        },
+        {
+          "group": "Black or African American",
+          "n": 17,
+          "approval_rate": 1.0,
+          "included": false
+        },
+        {
+          "group": "Joint",
+          "n": 24,
+          "approval_rate": 1.0,
+          "included": false
+        },
+        {
+          "group": "White",
+          "n": 378,
+          "approval_rate": 0.9391534391534392,
+          "included": true
+        },
+        {
+          "group": "Race Not Available",
+          "n": 151,
+          "approval_rate": 0.8807947019867549,
+          "included": false
+        },
+        {
+          "group": "Asian",
+          "n": 25,
+          "approval_rate": 0.84,
+          "included": true
+        }
+      ],
+      "derived_ethnicity": [
+        {
+          "group": "Hispanic or Latino",
+          "n": 9,
+          "approval_rate": 1.0,
+          "included": false
+        },
+        {
+          "group": "Not Hispanic or Latino",
+          "n": 429,
+          "approval_rate": 0.9370629370629371,
+          "included": true
+        },
+        {
+          "group": "Joint",
+          "n": 12,
+          "approval_rate": 0.9166666666666666,
+          "included": false
+        },
+        {
+          "group": "Ethnicity Not Available",
+          "n": 150,
+          "approval_rate": 0.8866666666666667,
+          "included": false
+        }
+      ],
+      "derived_sex": [
+        {
+          "group": "Joint",
+          "n": 233,
+          "approval_rate": 0.9699570815450643,
+          "included": false
+        },
+        {
+          "group": "Female",
+          "n": 62,
+          "approval_rate": 0.9193548387096774,
+          "included": true
+        },
+        {
+          "group": "Male",
+          "n": 203,
+          "approval_rate": 0.9064039408866995,
+          "included": true
+        },
+        {
+          "group": "Sex Not Available",
+          "n": 102,
+          "approval_rate": 0.8627450980392157,
+          "included": false
+        }
+      ],
+      "applicant_age": [
+        {
+          "group": "55-64",
+          "n": 50,
+          "approval_rate": 1.0,
+          "included": true
+        },
+        {
+          "group": "8888",
+          "n": 20,
+          "approval_rate": 1.0,
+          "included": false
+        },
+        {
+          "group": "35-44",
+          "n": 198,
+          "approval_rate": 0.9343434343434344,
+          "included": true
+        },
+        {
+          "group": "25-34",
+          "n": 148,
+          "approval_rate": 0.9324324324324325,
+          "included": true
+        },
+        {
+          "group": "45-54",
+          "n": 143,
+          "approval_rate": 0.9230769230769231,
+          "included": true
+        },
+        {
+          "group": "<25",
+          "n": 6,
+          "approval_rate": 0.8333333333333334,
+          "included": false
+        },
+        {
+          "group": ">74",
+          "n": 9,
+          "approval_rate": 0.7777777777777778,
+          "included": false
+        },
+        {
+          "group": "65-74",
+          "n": 26,
+          "approval_rate": 0.6923076923076923,
+          "included": true
+        }
+      ]
+    },
+    "gaps": {
+      "tract_minority_level": {
+        "label": "Neighborhood (tract minority level)",
+        "best_group": "low",
+        "best_rate": 0.9294871794871795,
+        "best_n": 312,
+        "worst_group": "high",
+        "worst_rate": 0.9152542372881356,
+        "worst_n": 59,
+        "gap": 0.014232942199043919,
+        "di_ratio": 0.98468731735827,
+        "flagged": false,
+        "severity": "none",
+        "n_groups_compared": 3
+      },
+      "derived_race": {
+        "label": "Race",
+        "best_group": "White",
+        "best_rate": 0.9391534391534392,
+        "best_n": 378,
+        "worst_group": "Asian",
+        "worst_rate": 0.84,
+        "worst_n": 25,
+        "gap": 0.09915343915343922,
+        "di_ratio": 0.8944225352112676,
+        "flagged": false,
+        "severity": "none",
+        "n_groups_compared": 2
+      },
+      "derived_sex": {
+        "label": "Sex",
+        "best_group": "Female",
+        "best_rate": 0.9193548387096774,
+        "best_n": 62,
+        "worst_group": "Male",
+        "worst_rate": 0.9064039408866995,
+        "worst_n": 203,
+        "gap": 0.01295089782297787,
+        "di_ratio": 0.9859130585083399,
+        "flagged": false,
+        "severity": "none",
+        "n_groups_compared": 2
+      },
+      "applicant_age": {
+        "label": "Age",
+        "best_group": "55-64",
+        "best_rate": 1.0,
+        "best_n": 50,
+        "worst_group": "65-74",
+        "worst_rate": 0.6923076923076923,
+        "worst_n": 26,
+        "gap": 0.3076923076923077,
+        "di_ratio": 0.6923076923076923,
+        "flagged": true,
+        "severity": "medium",
+        "n_groups_compared": 5
+      }
+    },
+    "min_group_size": 20
+  },
+  "swap_tests": {
+    "summary": [
+      {
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "factor_group": "neighborhood",
+        "n_pairs": 250,
+        "n_flipped": 13,
+        "flip_rate": 0.052,
+        "approve_to_deny": 13,
+        "deny_to_approve": 0,
+        "avg_delta_prob": -0.1893736,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "medium"
+      },
+      {
+        "varied_factor": "age_flip",
+        "label": "Age moved across 62",
+        "factor_group": "age",
+        "n_pairs": 250,
+        "n_flipped": 0,
+        "flip_rate": 0.0,
+        "approve_to_deny": 0,
+        "deny_to_approve": 0,
+        "avg_delta_prob": 0.0,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "none"
+      },
+      {
+        "varied_factor": "ethnicity_flip",
+        "label": "Ethnicity flipped (Hispanic / not Hispanic)",
+        "factor_group": "ethnicity",
+        "n_pairs": 247,
+        "n_flipped": 0,
+        "flip_rate": 0.0,
+        "approve_to_deny": 0,
+        "deny_to_approve": 0,
+        "avg_delta_prob": 0.0,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "none"
+      },
+      {
+        "varied_factor": "race_black",
+        "label": "Race changed to Black",
+        "factor_group": "race",
+        "n_pairs": 216,
+        "n_flipped": 0,
+        "flip_rate": 0.0,
+        "approve_to_deny": 0,
+        "deny_to_approve": 0,
+        "avg_delta_prob": 0.0,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "none"
+      },
+      {
+        "varied_factor": "race_white",
+        "label": "Race changed to White",
+        "factor_group": "race",
+        "n_pairs": 56,
+        "n_flipped": 0,
+        "flip_rate": 0.0,
+        "approve_to_deny": 0,
+        "deny_to_approve": 0,
+        "avg_delta_prob": 0.0,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "none"
+      },
+      {
+        "varied_factor": "sex_flip",
+        "label": "Sex flipped (male / female)",
+        "factor_group": "sex",
+        "n_pairs": 250,
+        "n_flipped": 0,
+        "flip_rate": 0.0,
+        "approve_to_deny": 0,
+        "deny_to_approve": 0,
+        "avg_delta_prob": 0.0,
+        "bank_inputs_changed": true,
+        "n_inconsistent": 0,
+        "severity": "none"
+      }
+    ],
+    "examples": [
+      {
+        "pair_group_id": "P-0039",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 18.7,
+        "to": 84.6,
+        "base_case_id": "C-00557",
+        "variant_case_id": "C-00687",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.5487,
+        "variant_probability": 0.3386,
+        "income": 510.0,
+        "loan_amount": 2486000,
+        "debt_to_income_ratio": "50%-60%",
+        "loan_to_value_ratio": 60.33
+      },
+      {
+        "pair_group_id": "P-0044",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 17.37,
+        "to": 87.49,
+        "base_case_id": "C-01805",
+        "variant_case_id": "C-00167",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6904,
+        "variant_probability": 0.4712,
+        "income": 650.0,
+        "loan_amount": 1866000,
+        "debt_to_income_ratio": "50%-60%",
+        "loan_to_value_ratio": 37.74
+      },
+      {
+        "pair_group_id": "P-0054",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 28.68,
+        "to": 95.66,
+        "base_case_id": "C-00376",
+        "variant_case_id": "C-01807",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6179,
+        "variant_probability": 0.4669,
+        "income": 12.0,
+        "loan_amount": 631000,
+        "debt_to_income_ratio": "37",
+        "loan_to_value_ratio": 80.0
+      },
+      {
+        "pair_group_id": "P-0067",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 8.0,
+        "to": 87.49,
+        "base_case_id": "C-00424",
+        "variant_case_id": "C-00188",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6557,
+        "variant_probability": 0.4626,
+        "income": 716.0,
+        "loan_amount": 1651000,
+        "debt_to_income_ratio": "50%-60%",
+        "loan_to_value_ratio": 37.74
+      },
+      {
+        "pair_group_id": "P-0086",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 23.06,
+        "to": 84.6,
+        "base_case_id": "C-01912",
+        "variant_case_id": "C-00368",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.5278,
+        "variant_probability": 0.2989,
+        "income": 590.0,
+        "loan_amount": 1963000,
+        "debt_to_income_ratio": ">60%",
+        "loan_to_value_ratio": 75.0
+      },
+      {
+        "pair_group_id": "P-0089",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 22.54,
+        "to": 85.15,
+        "base_case_id": "C-01486",
+        "variant_case_id": "C-01428",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.5143,
+        "variant_probability": 0.2519,
+        "income": 605.0,
+        "loan_amount": 1940000,
+        "debt_to_income_ratio": ">60%",
+        "loan_to_value_ratio": 75.0
+      },
+      {
+        "pair_group_id": "P-0099",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 23.45,
+        "to": 95.66,
+        "base_case_id": "C-01240",
+        "variant_case_id": "C-01823",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6353,
+        "variant_probability": 0.4805,
+        "income": 0.0,
+        "loan_amount": 810000,
+        "debt_to_income_ratio": "<20%",
+        "loan_to_value_ratio": 76.19
+      },
+      {
+        "pair_group_id": "P-0119",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 25.95,
+        "to": 78.83,
+        "base_case_id": "C-01587",
+        "variant_case_id": "C-01254",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6254,
+        "variant_probability": 0.4638,
+        "income": 13.0,
+        "loan_amount": 644000,
+        "debt_to_income_ratio": "37",
+        "loan_to_value_ratio": 80.0
+      },
+      {
+        "pair_group_id": "P-0129",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 11.68,
+        "to": 95.66,
+        "base_case_id": "C-00606",
+        "variant_case_id": "C-01578",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.6102,
+        "variant_probability": 0.4564,
+        "income": 11.0,
+        "loan_amount": 591000,
+        "debt_to_income_ratio": "37",
+        "loan_to_value_ratio": 80.0
+      },
+      {
+        "pair_group_id": "P-0195",
+        "varied_factor": "tract_high_minority",
+        "label": "Neighborhood: moved to a high-minority tract",
+        "changed_column": "tract_minority_population_percent",
+        "from": 17.37,
+        "to": 73.48,
+        "base_case_id": "C-01416",
+        "variant_case_id": "C-00738",
+        "base_decision": 1,
+        "variant_decision": 0,
+        "base_probability": 0.8658,
+        "variant_probability": 0.4855,
+        "income": 143.0,
+        "loan_amount": 426000,
+        "debt_to_income_ratio": "41",
+        "loan_to_value_ratio": 80.0
+      }
+    ],
+    "consistency": {
+      "n_identical_pairs": 0,
+      "n_inconsistent": 0,
+      "inconsistency_rate": 0.0,
+      "severity": "none"
+    }
+  },
+  "consistency": {
+    "n_identical_pairs": 0,
+    "n_inconsistent": 0,
+    "inconsistency_rate": 0.0,
+    "severity": "none"
+  },
+  "proxy_rankings": {
+    "race": [
+      {
+        "feature": "tract_minority_population_percent",
+        "auc": 0.7984633569739953,
+        "flagged": true
+      },
+      {
+        "feature": "tract_median_age_of_housing_units",
+        "auc": 0.7603568614206911,
+        "flagged": true
+      },
+      {
+        "feature": "tract_to_msa_income_percentage",
+        "auc": 0.7570359112912305,
+        "flagged": true
+      },
+      {
+        "feature": "tract_one_to_four_family_homes",
+        "auc": 0.7526455026455027,
+        "flagged": true
+      },
+      {
+        "feature": "income",
+        "auc": 0.7193234267702352,
+        "flagged": true
+      },
+      {
+        "feature": "debt_to_income_ratio",
+        "auc": 0.6950073173477428,
+        "flagged": true
+      },
+      {
+        "feature": "census_tract",
+        "auc": 0.6940222897669706,
+        "flagged": true
+      },
+      {
+        "feature": "property_value",
+        "auc": 0.6512439491162896,
+        "flagged": true
+      },
+      {
+        "feature": "applicant_credit_score_type",
+        "auc": 0.6415906788247214,
+        "flagged": false
+      },
+      {
+        "feature": "co_applicant_credit_score_type",
+        "auc": 0.6252673646290667,
+        "flagged": false
+      },
+      {
+        "feature": "loan_amount",
+        "auc": 0.6230440166610379,
+        "flagged": false
+      },
+      {
+        "feature": "tract_population",
+        "auc": 0.6209332432736688,
+        "flagged": false
+      },
+      {
+        "feature": "loan_to_value_ratio",
+        "auc": 0.5939997748508387,
+        "flagged": false
+      },
+      {
+        "feature": "total_units",
+        "auc": 0.5251041314871102,
+        "flagged": false
+      },
+      {
+        "feature": "loan_type",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "loan_term",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "lien_status",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "construction_method",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_secured_property_type",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_land_property_interest",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "multifamily_affordable_units",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "submission_of_application",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "initially_payable_to_institution",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "aus_1",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "ffiec_msa_md_median_family_income",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "county_code",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "state_code",
+        "auc": 0.51435325903411,
+        "flagged": false
+      },
+      {
+        "feature": "intro_rate_period",
+        "auc": 0.5101317122593718,
+        "flagged": false
+      }
+    ],
+    "sex": [
+      {
+        "feature": "tract_median_age_of_housing_units",
+        "auc": 0.7255283648498332,
+        "flagged": true
+      },
+      {
+        "feature": "loan_amount",
+        "auc": 0.7068170983632607,
+        "flagged": true
+      },
+      {
+        "feature": "loan_to_value_ratio",
+        "auc": 0.6881852852375656,
+        "flagged": true
+      },
+      {
+        "feature": "census_tract",
+        "auc": 0.6712219926902908,
+        "flagged": true
+      },
+      {
+        "feature": "income",
+        "auc": 0.6565231209280152,
+        "flagged": true
+      },
+      {
+        "feature": "tract_population",
+        "auc": 0.6519545526775782,
+        "flagged": true
+      },
+      {
+        "feature": "property_value",
+        "auc": 0.6508422056252979,
+        "flagged": true
+      },
+      {
+        "feature": "tract_to_msa_income_percentage",
+        "auc": 0.6359844271412681,
+        "flagged": false
+      },
+      {
+        "feature": "tract_minority_population_percent",
+        "auc": 0.6212855553789927,
+        "flagged": false
+      },
+      {
+        "feature": "tract_one_to_four_family_homes",
+        "auc": 0.5841013824884792,
+        "flagged": false
+      },
+      {
+        "feature": "applicant_credit_score_type",
+        "auc": 0.5601064675035755,
+        "flagged": false
+      },
+      {
+        "feature": "co_applicant_credit_score_type",
+        "auc": 0.5521611314158589,
+        "flagged": false
+      },
+      {
+        "feature": "debt_to_income_ratio",
+        "auc": 0.5497378039091053,
+        "flagged": false
+      },
+      {
+        "feature": "intro_rate_period",
+        "auc": 0.5345622119815667,
+        "flagged": false
+      },
+      {
+        "feature": "loan_type",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "loan_term",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "lien_status",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "construction_method",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_secured_property_type",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_land_property_interest",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "total_units",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "multifamily_affordable_units",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "submission_of_application",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "initially_payable_to_institution",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "aus_1",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "ffiec_msa_md_median_family_income",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "county_code",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      },
+      {
+        "feature": "state_code",
+        "auc": 0.5126330843794693,
+        "flagged": false
+      }
+    ],
+    "age": [
+      {
+        "feature": "tract_median_age_of_housing_units",
+        "auc": 0.8790825688073395,
+        "flagged": true
+      },
+      {
+        "feature": "tract_one_to_four_family_homes",
+        "auc": 0.8165923984272608,
+        "flagged": true
+      },
+      {
+        "feature": "tract_minority_population_percent",
+        "auc": 0.8118741808650065,
+        "flagged": true
+      },
+      {
+        "feature": "census_tract",
+        "auc": 0.7815727391874181,
+        "flagged": true
+      },
+      {
+        "feature": "tract_to_msa_income_percentage",
+        "auc": 0.7450065530799476,
+        "flagged": true
+      },
+      {
+        "feature": "tract_population",
+        "auc": 0.7014416775884665,
+        "flagged": true
+      },
+      {
+        "feature": "debt_to_income_ratio",
+        "auc": 0.6921100917431192,
+        "flagged": true
+      },
+      {
+        "feature": "intro_rate_period",
+        "auc": 0.6771166448230668,
+        "flagged": true
+      },
+      {
+        "feature": "loan_to_value_ratio",
+        "auc": 0.671559633027523,
+        "flagged": true
+      },
+      {
+        "feature": "loan_amount",
+        "auc": 0.6707208387942333,
+        "flagged": true
+      },
+      {
+        "feature": "property_value",
+        "auc": 0.6543119266055045,
+        "flagged": true
+      },
+      {
+        "feature": "income",
+        "auc": 0.6502228047182175,
+        "flagged": true
+      },
+      {
+        "feature": "co_applicant_credit_score_type",
+        "auc": 0.577824377457405,
+        "flagged": false
+      },
+      {
+        "feature": "applicant_credit_score_type",
+        "auc": 0.5266579292267365,
+        "flagged": false
+      },
+      {
+        "feature": "total_units",
+        "auc": 0.5227522935779817,
+        "flagged": false
+      },
+      {
+        "feature": "loan_type",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "loan_term",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "lien_status",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "construction_method",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_secured_property_type",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "manufactured_home_land_property_interest",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "multifamily_affordable_units",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "submission_of_application",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "initially_payable_to_institution",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "aus_1",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "ffiec_msa_md_median_family_income",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "county_code",
+        "auc": 0.5,
+        "flagged": false
+      },
+      {
+        "feature": "state_code",
+        "auc": 0.5,
+        "flagged": false
+      }
+    ]
+  },
+  "historical": {
+    "sample": {
+      "n": 600,
+      "agreement": 0.935,
+      "by_tract_level": [
+        {
+          "level": "low",
+          "n": 312,
+          "historical_approval": 0.9487179487179487,
+          "model_approval": 0.9294871794871795,
+          "false_denial_rate": 0.04391891891891892
+        },
+        {
+          "level": "medium",
+          "n": 229,
+          "historical_approval": 0.9563318777292577,
+          "model_approval": 0.9213973799126638,
+          "false_denial_rate": 0.0547945205479452
+        },
+        {
+          "level": "high",
+          "n": 59,
+          "historical_approval": 0.9661016949152542,
+          "model_approval": 0.9152542372881356,
+          "false_denial_rate": 0.05263157894736842
+        }
+      ],
+      "false_denial_gap": 0.010875601629026281
+    }
+  },
+  "factors": {
+    "neighborhood": {
+      "rating": "medium",
+      "group_gap_severity": "none",
+      "swap_severity": "medium",
+      "reasons": [
+        "5% of matched pairs flipped (13/250) when only this changed",
+        "tract_minority_population_percent predicts race (AUC 0.80)",
+        "tract_median_age_of_housing_units predicts race (AUC 0.76)"
+      ]
+    },
+    "race": {
+      "rating": "none",
+      "group_gap_severity": "none",
+      "swap_severity": "none",
+      "reasons": []
+    },
+    "ethnicity": {
+      "rating": "none",
+      "group_gap_severity": "none",
+      "swap_severity": "none",
+      "reasons": []
+    },
+    "sex": {
+      "rating": "none",
+      "group_gap_severity": "none",
+      "swap_severity": "none",
+      "reasons": []
+    },
+    "age": {
+      "rating": "medium",
+      "group_gap_severity": "medium",
+      "swap_severity": "none",
+      "reasons": [
+        "approval ratio 0.69 (65-74 vs 55-64), below the 0.80 guideline"
+      ]
+    }
+  },
+  "verdict": "needs_review",
+  "verdict_reason": "Disparities found that need human review: neighborhood, age. Gaps alone don't prove discrimination.",
+  "thresholds": {
+    "disparate_impact": 0.8,
+    "proxy_auc": 0.65,
+    "flip_rate": {
+      "high": 0.1,
+      "medium": 0.05,
+      "low": 0.02
+    },
+    "low_minority_pct": 30.0,
+    "high_minority_pct": 70.0
+  },
+  "limitations": [
+    "HMDA data has no credit scores, so group gaps show disparities worth review, not proof of discrimination.",
+    "Not every feature correlated with race is unfair; people decide what is justified.",
+    "Swapped applicants combine real values and may occasionally be unrealistic.",
+    "Joint applicants and groups with missing demographics are excluded from comparisons."
+  ]
+}

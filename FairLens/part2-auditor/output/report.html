@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fair Lens Audit Report</title>
+<style>body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F6F5F0;color:#12151C;margin:0}main{max-width:900px;margin:0 auto;padding:32px 20px 64px}h1{background:#A9C5A5;padding:16px 20px;border-radius:10px;font-size:26px}h2{margin-top:32px;border-bottom:1px solid #E2E4E9;padding-bottom:6px}table{border-collapse:collapse;width:100%;margin:12px 0;background:#FDFCF9;font-size:14px}th,td{border:1px solid #E2E4E9;padding:8px 10px;text-align:left}th{background:#EEF0EA}p,li{line-height:1.6}code{font-family:'IBM Plex Mono',monospace}@media(max-width:600px){table{display:block;overflow-x:auto}}</style>
+</head>
+<body>
+<main>
+<h1>Fair Lens Audit Report</h1>
+<p><em>Generated 2026-10-24T06:46:48+00:00 in template mode (no AI credentials or the AI call failed).</em></p>
+<h2>Overall verdict</h2>
+<p><strong>NEEDS REVIEW</strong>: Disparities found that need human review: neighborhood, age. Gaps alone don&#x27;t prove discrimination.</p>
+<h2>What we tested</h2>
+<ul><li>Cases audited: 2119 (600 population applicants and 1519 matched applicants in 250 groups)</li><li>Overall approval rate: 92.7%</li><li>Model inputs checked: loan_type, loan_amount, property_value, income, debt_to_income_ratio, loan_to_value_ratio, loan_term, intro_rate_period, lien_status, construction_method, manufactured_home_secured_property_type, manufactured_home_land_property_interest, total_units, multifamily_affordable_units, submission_of_application, initially_payable_to_institution, aus_1, census_tract, tract_minority_population_percent, tract_to_msa_income_percentage, ffiec_msa_md_median_family_income, tract_population, tract_one_to_four_family_homes, tract_median_age_of_housing_units, county_code, state_code, msa_md, co_applicant_credit_score_type, applicant_credit_score_type</li><li>Tests: group fairness, swap tests (one change at a time), proxy detection</li></ul>
+<h2>Bias summary by factor</h2>
+<table><thead><tr><th>Factor</th><th>Rating</th><th>Evidence</th></tr></thead><tbody><tr><td>Neighborhood</td><td>MEDIUM</td><td>5% of matched pairs flipped (13/250) when only this changed; tract_minority_population_percent predicts race (AUC 0.80); tract_median_age_of_housing_units predicts race (AUC 0.76)</td></tr><tr><td>Race</td><td>NONE</td><td>No gap or flips found</td></tr><tr><td>Ethnicity</td><td>NONE</td><td>No gap or flips found</td></tr><tr><td>Sex</td><td>NONE</td><td>No gap or flips found</td></tr><tr><td>Age</td><td>MEDIUM</td><td>approval ratio 0.69 (65-74 vs 55-64), below the 0.80 guideline</td></tr></tbody></table>
+<h2>Key findings</h2>
+<h3>Group fairness (population set)</h3>
+<table><thead><tr><th>Dimension</th><th>Best group</th><th>Worst group</th><th>Gap</th><th>Ratio</th><th>Flagged</th></tr></thead><tbody><tr><td>Neighborhood (tract minority level)</td><td>low (92.9%)</td><td>high (91.5%)</td><td>1.4 pts</td><td>0.98</td><td>no</td></tr><tr><td>Race</td><td>White (93.9%)</td><td>Asian (84.0%)</td><td>9.9 pts</td><td>0.89</td><td>no</td></tr><tr><td>Sex</td><td>Female (91.9%)</td><td>Male (90.6%)</td><td>1.3 pts</td><td>0.99</td><td>no</td></tr><tr><td>Age</td><td>55-64 (100.0%)</td><td>65-74 (69.2%)</td><td>30.8 pts</td><td>0.69</td><td>YES</td></tr></tbody></table>
+<p>Ratio = worst group&#x27;s approval rate / best group&#x27;s. Below 0.80 is flagged (the four-fifths rule).</p>
+<h3>Swap tests (matched applicants, one change at a time)</h3>
+<table><thead><tr><th>Change</th><th>Pairs</th><th>Flipped</th><th>Flip rate</th><th>Avg probability change</th><th>Severity</th></tr></thead><tbody><tr><td>Neighborhood: moved to a high-minority tract</td><td>250</td><td>13</td><td>5.2%</td><td>-0.189</td><td>medium</td></tr><tr><td>Age moved across 62</td><td>250</td><td>0</td><td>0.0%</td><td>+0.000</td><td>none</td></tr><tr><td>Ethnicity flipped (Hispanic / not Hispanic)</td><td>247</td><td>0</td><td>0.0%</td><td>+0.000</td><td>none</td></tr><tr><td>Race changed to Black</td><td>216</td><td>0</td><td>0.0%</td><td>+0.000</td><td>none</td></tr><tr><td>Race changed to White</td><td>56</td><td>0</td><td>0.0%</td><td>+0.000</td><td>none</td></tr><tr><td>Sex flipped (male / female)</td><td>250</td><td>0</td><td>0.0%</td><td>+0.000</td><td>none</td></tr></tbody></table>
+<h3>Proxy detection: model inputs that predict race</h3>
+<table><thead><tr><th>Model input</th><th>AUC</th><th>Flagged</th></tr></thead><tbody><tr><td>tract_minority_population_percent</td><td>0.80</td><td>YES</td></tr><tr><td>tract_median_age_of_housing_units</td><td>0.76</td><td>YES</td></tr><tr><td>tract_to_msa_income_percentage</td><td>0.76</td><td>YES</td></tr><tr><td>tract_one_to_four_family_homes</td><td>0.75</td><td>YES</td></tr><tr><td>income</td><td>0.72</td><td>YES</td></tr></tbody></table>
+<p>AUC 0.5 = no information about race, 1.0 = a perfect stand-in. Above 0.65 is flagged.</p>
+<h2>Example cases</h2>
+<ul><li><strong>P-0039</strong> (Neighborhood: moved to a high-minority tract): tract_minority_population_percent 18.7 -&gt; 84.6. Decision went from approved to denied (probability 0.549 -&gt; 0.339); every other input was identical.</li><li><strong>P-0044</strong> (Neighborhood: moved to a high-minority tract): tract_minority_population_percent 17.37 -&gt; 87.49. Decision went from approved to denied (probability 0.690 -&gt; 0.471); every other input was identical.</li><li><strong>P-0054</strong> (Neighborhood: moved to a high-minority tract): tract_minority_population_percent 28.68 -&gt; 95.66. Decision went from approved to denied (probability 0.618 -&gt; 0.467); every other input was identical.</li><li><strong>P-0067</strong> (Neighborhood: moved to a high-minority tract): tract_minority_population_percent 8.0 -&gt; 87.49. Decision went from approved to denied (probability 0.656 -&gt; 0.463); every other input was identical.</li><li><strong>P-0086</strong> (Neighborhood: moved to a high-minority tract): tract_minority_population_percent 23.06 -&gt; 84.6. Decision went from approved to denied (probability 0.528 -&gt; 0.299); every other input was identical.</li></ul>
+<h2>Likely causes</h2>
+<ul><li>The model gives weight to neighborhood features. In Los Angeles County, a tract&#x27;s minority share closely tracks applicants&#x27; race, so location acts as a stand-in for race even though race is never an input.</li><li>Some group gaps appear without matching decision flips. These can come from legitimate differences such as income; review before acting.</li></ul>
+<h2>Recommended fixes</h2>
+<ul><li>Remove tract_minority_population_percent from the model inputs; it has no legitimate role in judging repayment.</li><li>Review other neighborhood inputs (for example tract_to_msa_income_percentage) and keep them only if the bank can justify them; retrain and re-audit.</li><li>Re-run Fair Lens before every new model version goes live, and on a regular schedule to catch drift.</li><li>Keep a person in the loop for denials near the approval threshold.</li></ul>
+<h2>Comparison with real past decisions</h2>
+<p>On 600 population applicants drawn from real records, the model agreed with the lender&#x27;s actual decision 93.5% of the time.</p>
+<table><thead><tr><th>Neighborhood</th><th>Real approval</th><th>Model approval</th><th>Model denies past approvals</th></tr></thead><tbody><tr><td>low minority</td><td>94.9%</td><td>92.9%</td><td>4.4%</td></tr><tr><td>medium minority</td><td>95.6%</td><td>92.1%</td><td>5.5%</td></tr><tr><td>high minority</td><td>96.6%</td><td>91.5%</td><td>5.3%</td></tr></tbody></table>
+<p>Past decisions may themselves be biased, so matching them is not proof of fairness.</p>
+<h2>Limitations</h2>
+<ul><li>HMDA data has no credit scores, so group gaps show disparities worth review, not proof of discrimination.</li><li>Not every feature correlated with race is unfair; people decide what is justified.</li><li>Swapped applicants combine real values and may occasionally be unrealistic.</li><li>Joint applicants and groups with missing demographics are excluded from comparisons.</li></ul>
+</main>
+</body>
+</html>

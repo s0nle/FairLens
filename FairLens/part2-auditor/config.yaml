@@ -1,0 +1,151 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Quality Assurance Auditor — Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+hmda_path: "data/hmda_real.csv.csv"          # raw HMDA CSV (place here before running)
+model_path: "models/bank_model.joblib"           # Part 1's saved sklearn Pipeline
+feature_list_path: "models/feature_list.json"    # ordered list of model input features
+
+applications_path:  "data/applications_for_bank.csv"   # sent to the bank model
+audit_key_path:     "data/audit_key.csv"                # kept by the auditor
+results_path:       "data/bank_results.csv"             # returned by the bank model
+
+output_dir: "output"   # report.md, report.html, audit_results.json land here
+
+# ── Reproducibility ───────────────────────────────────────────────────────────
+random_seed: 42
+
+# ── Generator settings ────────────────────────────────────────────────────────
+n_population: 600          # realistic applicants for group fairness
+n_matched_pairs: 250       # base applicants for counterfactual / swap tests
+
+# Tract minority-level thresholds (tract_minority_population_percent)
+high_minority_threshold: 70.0   # > this → "high" minority tract
+low_minority_threshold:  30.0   # < this → "low"  minority tract
+
+# ── HMDA pre-filter (Part 2 replicates the same filter as Part 1) ─────────────
+hmda_filters:
+  loan_purpose:                   1   # home purchase
+  business_or_commercial_purpose: 2   # not for business
+  open_end_line_of_credit:        2   # closed-end
+  occupancy_type:                 1   # principal residence
+
+# ── Model input feature columns ───────────────────────────────────────────────
+# These must exactly match the feature list saved in models/feature_list.json.
+# They are used only as a fallback when the saved model file is unavailable.
+model_features:
+  - loan_type
+  - loan_amount
+  - property_value
+  - income
+  - debt_to_income_ratio
+  - loan_to_value_ratio
+  - loan_term
+  - intro_rate_period
+  - lien_status
+  - property_type: null           # not in 2018 LAR; placeholder if Part 1 uses it
+  - construction_method
+  - manufactured_home_secured_property_type
+  - manufactured_home_land_property_interest
+  - total_units
+  - multifamily_affordable_units
+  - submission_of_application
+  - initially_payable_to_institution
+  - aus_1
+  - denial_reason_1: null         # POST-DECISION — must never be used as input
+  - census_tract
+  - tract_minority_population_percent
+  - tract_to_msa_income_percentage
+  - ffiec_msa_md_median_family_income
+  - tract_population
+  - tract_one_to_four_family_homes
+  - tract_median_age_of_housing_units
+  - county_code
+  - state_code
+  - msa_md
+  - co_applicant_credit_score_type
+  - applicant_credit_score_type
+
+# ── Protected / audit-only columns (NEVER sent to the bank model) ─────────────
+# All demographic identifiers — change every sub-column together in swaps.
+protected_columns:
+  race:
+    - derived_race
+    - applicant_race_1
+    - applicant_race_2
+    - applicant_race_3
+    - applicant_race_4
+    - applicant_race_5
+    - applicant_race_observed
+    - co_applicant_race_1
+    - co_applicant_race_2
+    - co_applicant_race_3
+    - co_applicant_race_4
+    - co_applicant_race_5
+    - co_applicant_race_observed
+  ethnicity:
+    - derived_ethnicity
+    - applicant_ethnicity_1
+    - applicant_ethnicity_2
+    - applicant_ethnicity_3
+    - applicant_ethnicity_4
+    - applicant_ethnicity_5
+    - applicant_ethnicity_observed
+    - co_applicant_ethnicity_1
+    - co_applicant_ethnicity_2
+    - co_applicant_ethnicity_3
+    - co_applicant_ethnicity_4
+    - co_applicant_ethnicity_5
+    - co_applicant_ethnicity_observed
+  sex:
+    - derived_sex
+    - applicant_sex
+    - applicant_sex_observed
+    - co_applicant_sex
+    - co_applicant_sex_observed
+  age:
+    - applicant_age
+    - applicant_age_above_62
+    - co_applicant_age
+    - co_applicant_age_above_62
+
+# ── Post-decision columns — never model inputs ────────────────────────────────
+post_decision_columns:
+  - action_taken
+  - denial_reason_1
+  - denial_reason_2
+  - denial_reason_3
+  - denial_reason_4
+  - interest_rate
+  - rate_spread
+  - total_loan_costs
+  - total_points_and_fees
+  - origination_charges
+  - discount_points
+  - lender_credits
+  - purchaser_type
+  - hoepa_status
+
+# ── Fairness / audit thresholds ───────────────────────────────────────────────
+fairness:
+  disparate_impact_threshold: 0.80    # four-fifths rule
+  proxy_auc_flag_threshold:   0.65    # flag features whose proxy AUC > this
+  # Severity thresholds for disparate-impact ratio
+  severity:
+    high:   0.60    # ratio < 0.60  → high
+    medium: 0.75    # ratio < 0.75  → medium
+    low:    0.80    # ratio < 0.80  → low (below four-fifths rule)
+    # ratio >= 0.80 → none
+
+# ── LLM / report settings ─────────────────────────────────────────────────────
+llm:
+  provider: "watsonx"
+  model_id: "ibm/granite-3-3-8b-instruct"
+  # Credentials are read from environment variables — never hardcode them here.
+  # Required env vars:
+  #   WATSONX_API_KEY
+  #   WATSONX_PROJECT_ID
+  #   WATSONX_URL   (e.g. https://us-south.ml.cloud.ibm.com)
+  max_tokens: 1500
+  temperature: 0.2
