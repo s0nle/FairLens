@@ -6,7 +6,7 @@ Built at **Sparthill Hacks 2026** for the IBM *Responsible AI for Business & Soc
 
 ---
 
-## Why we built it
+## Why we built it 
 
 AI now helps decide who gets a loan, a job, or a home, yet businesses have no independent way to prove those decisions are fair.
 
